@@ -16,7 +16,7 @@ class Counter extends React.Component {
     counter: state.counter
   })
   const mapDispatchToProps = (dispatch, ownProps) => ({
-    //addTodo: text => dispatch(addTodo(text))
+  //  addTodo: text => dispatch(addTodo(text))
   })
 
   export default connect(
