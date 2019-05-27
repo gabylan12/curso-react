@@ -39,9 +39,9 @@ class Platforms extends React.Component {
 
           {this.state.platforms.map(platform =>
 
-            <Link to={`/${platform.name}`} key={`${platform.name}`}>{platform.name}</Link>
+            <Link to={`/platforms/${platform.name}`} key={`${platform.name}`}>{platform.name}</Link>
           )}
-          <Route path="/:platformId" component={Platform} />
+          <Route path="/platforms" component={Platform} />
         </BrowserRouter>
 
       </>)
@@ -62,48 +62,65 @@ class PlatformClass extends React.Component {
     super(props);
     this.state = {
       search: "",
-      platformId:""
+      platformId: "",
+      components: []
     }
-}
-   componentDidUpdate(){
-     this.fetchPositions();
-   }
- 
-   componentDidMount(){
-     this.fetchPositions();
-   }
-   
-   fetchPositions = () =>  {
+  }
+  componentDidUpdate() {
+    this.fetchPositions();
+  }
+
+  componentDidMount() {
+    this.fetchPositions();
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state.platformId !== nextProps.match.params.platformId ||
+           this.state.components !== nextState.components;
+  }
+
+  fetchPositions = () => {
+    
     this.setState({
-      platformId: this.props.match.params.platformId
+      platformId: this.props.match.params.platformId,
+      
 
     });
-     /*axios.get("https://jobs.github.com/positions.json" ,
-     {params: {
-       description: "python",
-       full_time: "true",
-       location: this.props.match.params.topicId
-     }})
-       .then(result => {
-         this.setState({
-           location: this.props.match.params.topicId,
-           offers: result.data
- 
-         });
-       })
-       .catch(function (error) {
-         console.log(error);
-       });*/
- 
-   } 
+  }
+
+  searchResults() {
+    console.log("ok");
+    console.log(this.state.components)
+    axios.get("https://libraries.io/api/search",
+      {
+        params: {
+          q: this.state.search,
+          platform: this.state.platformId
+        }
+      })
+      .then(
+        
+        result => {
+          this.setState({
+            components: result.data
+          });
+          console.log("finish")
+        })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 
   render() {
     return (
       <>
-         <h1>${this.state.platformId}</h1>
-         <input type="text" value={this.state.search}></input>
-         <input type="button" >Search</input>
+        <input type="text"
+          onChange={event => this.setState({ search: event.target.value })}></input>
+        <button onClick={event => this.searchResults()} >Search</button>
+        {this.state.components.map(component =>
 
+          <h6 key={`${component.name}`}>{component.name}</h6>
+        )}
       </>)
   }
 }
